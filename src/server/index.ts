@@ -10,28 +10,37 @@ export const app = new Elysia({ prefix: "/api" })
         client,
         lucia,
     })
+    .derive(async ({ lucia, cookie }) => {
+        const sessionCookieAttributes = cookie[lucia.sessionCookieName];
+        const sessionId = sessionCookieAttributes.value;
+
+        if (!sessionId) {
+            return {
+                user: null,
+            };
+        }
+
+        const { session, user } = await lucia.validateSession(sessionId);
+
+        if (session && session.fresh) {
+            const sessionCookie = lucia.createSessionCookie(session.id);
+            setSessionCookie(sessionCookieAttributes, sessionCookie);
+        }
+
+        if (!session) {
+            sessionCookieAttributes.remove();
+            return {
+                user: null,
+            };
+        }
+
+        return {
+            user,
+        };
+    })
     .get(
         "/auth/session",
-        async ({ lucia, cookie }) => {
-            const sessionCookieAttributes = cookie[lucia.sessionCookieName];
-            const sessionId = sessionCookieAttributes.value;
-
-            if (!sessionId) {
-                return null;
-            }
-
-            const { session, user } = await lucia.validateSession(sessionId);
-
-            if (session && session.fresh) {
-                const sessionCookie = lucia.createSessionCookie(session.id);
-                setSessionCookie(sessionCookieAttributes, sessionCookie);
-            }
-
-            if (!session) {
-                sessionCookieAttributes.remove();
-                return null;
-            }
-
+        async ({ user }) => {
             return user;
         },
         {
