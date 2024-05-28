@@ -32,14 +32,23 @@ export class EdgeDBAdapter implements Adapter {
             return [null, null];
         }
 
+        const {
+            id: _,
+            session_id,
+            expires_at,
+            user,
+            ...sessionAttributes
+        } = result;
+        const { id: userId, ...userAttributes } = user;
+
         return [
             {
-                id: result.session_id,
-                expiresAt: result.expires_at,
-                attributes: {},
-                userId: result.user.id,
+                id: session_id,
+                expiresAt: expires_at,
+                attributes: sessionAttributes,
+                userId: user.id,
             },
-            { id: result.user.id, attributes: {} },
+            { id: userId, attributes: userAttributes },
         ];
     }
 
@@ -48,12 +57,22 @@ export class EdgeDBAdapter implements Adapter {
             user_id: userId,
         });
 
-        return result.map((session) => ({
-            id: session.session_id,
-            expiresAt: session.expires_at,
-            userId: session.user.id,
-            attributes: {},
-        }));
+        return result.map((session) => {
+            const {
+                id: _,
+                session_id,
+                expires_at,
+                user,
+                ...sessionAttributes
+            } = session;
+
+            return {
+                id: session_id,
+                expiresAt: expires_at,
+                userId: user.id,
+                attributes: sessionAttributes,
+            };
+        });
     }
 
     async setSession(session: DatabaseSession) {

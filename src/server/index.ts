@@ -48,6 +48,7 @@ export const app = new Elysia({ prefix: "/api" })
                 t.Null(),
                 t.Object({
                     id: t.String(),
+                    email: t.String({ format: "email" }),
                 }),
             ]),
         }

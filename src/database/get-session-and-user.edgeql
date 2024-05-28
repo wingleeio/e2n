@@ -7,5 +7,6 @@ select session {
   expires_at,
   user: {
     id,
+    email,
   }
 }

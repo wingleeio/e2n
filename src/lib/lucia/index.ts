@@ -11,6 +11,9 @@ export const lucia = new Lucia(adapter, {
             secure: process.env.NODE_ENV === "production",
         },
     },
+    getUserAttributes: (attributes) => {
+        return attributes;
+    },
 });
 
 declare module "lucia" {
@@ -21,5 +24,7 @@ declare module "lucia" {
     }
 }
 
-interface DatabaseUserAttributes {}
+interface DatabaseUserAttributes {
+    email: string;
+}
 interface DatabaseSessionAttributes {}
