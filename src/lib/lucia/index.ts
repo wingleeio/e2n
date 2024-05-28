@@ -1,5 +1,5 @@
+import { client } from "@/lib/database";
 import { Lucia } from "lucia";
-import { client } from "../edgedb";
 import { EdgeDBAdapter } from "./edgedb-adapter";
 
 const adapter = new EdgeDBAdapter(client);
@@ -10,9 +10,6 @@ export const lucia = new Lucia(adapter, {
         attributes: {
             secure: process.env.NODE_ENV === "production",
         },
-    },
-    getUserAttributes: (attributes) => {
-        return {};
     },
 });
 

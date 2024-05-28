@@ -12,6 +12,10 @@ module default {
     }
 
     type User extending Base {
+        required email: str {
+            constraint exclusive;
+        };
+        required hashed_password: str;
 
     }
 

@@ -2,7 +2,7 @@ import { AUTH_HEADER } from "@/lib/constants";
 import { headers } from "next/headers";
 import { api } from "./api";
 
-type UserFromSession = Awaited<ReturnType<typeof api.session.get>>["data"];
+type UserFromSession = Awaited<ReturnType<typeof api.auth.session.get>>["data"];
 
 export type AuthResult =
     | {

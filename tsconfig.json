@@ -19,7 +19,7 @@
         ],
         "paths": {
             "@/*": ["./src/*"],
-            "@/db/*": ["./dbschema/*"]
+            "@/schema/*": ["./dbschema/*"]
         }
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

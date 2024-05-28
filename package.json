@@ -12,10 +12,12 @@
     },
     "dependencies": {
         "@elysiajs/eden": "^1.0.14",
+        "@node-rs/argon2": "^1.8.3",
         "edgedb": "^1.5.7",
         "elysia": "^1.0.22",
         "lucia": "^3.2.0",
         "next": "14.2.3",
+        "oslo": "^1.2.0",
         "react": "^18",
         "react-dom": "^18",
         "uuid": "^9.0.1"

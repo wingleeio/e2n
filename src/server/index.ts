@@ -1,7 +1,8 @@
-import * as queries from "@/db/queries";
-import { client } from "@/lib/edgedb";
+import { client } from "@/lib/database";
 import { lucia } from "@/lib/lucia";
 import { setSessionCookie } from "@/lib/lucia/set-session-cookie";
+import * as queries from "@/schema/queries";
+import { hash, verify } from "@node-rs/argon2";
 import { Elysia, t } from "elysia";
 
 export const app = new Elysia({ prefix: "/api" })
@@ -10,7 +11,7 @@ export const app = new Elysia({ prefix: "/api" })
         lucia,
     })
     .get(
-        "/session",
+        "/auth/session",
         async ({ lucia, cookie }) => {
             const sessionCookieAttributes = cookie[lucia.sessionCookieName];
             const sessionId = sessionCookieAttributes.value;
@@ -42,17 +43,84 @@ export const app = new Elysia({ prefix: "/api" })
             ]),
         }
     )
-    .post("/login", async ({ client, lucia, cookie }) => {
-        const user = await queries.createUser(client);
-        const session = await lucia.createSession(user.id, {});
-        const sessionCookie = lucia.createSessionCookie(session.id);
-        const sessionCookieAttributes = cookie[sessionCookie.name];
+    .post(
+        "/auth/signin",
+        async ({ client, lucia, cookie, body }) => {
+            const user = await queries.getUserWithHashedPassword(client, {
+                email: body.email,
+            });
 
-        setSessionCookie(sessionCookieAttributes, sessionCookie);
+            if (!user) {
+                throw new Error("Invalid email or password.");
+            }
 
-        return null;
-    })
-    .post("/logout", async ({ lucia, cookie }) => {
+            const verified = await verify(user.hashed_password, body.password, {
+                memoryCost: 19456,
+                timeCost: 2,
+                outputLen: 32,
+                parallelism: 1,
+            });
+
+            if (!verified) {
+                throw new Error("Invalid email or password.");
+            }
+
+            const session = await lucia.createSession(user.id, {});
+            const sessionCookie = lucia.createSessionCookie(session.id);
+            const sessionCookieAttributes = cookie[sessionCookie.name];
+
+            setSessionCookie(sessionCookieAttributes, sessionCookie);
+
+            return null;
+        },
+        {
+            body: t.Object({
+                email: t.String({ format: "email", error: "Invalid email." }),
+                password: t.String({
+                    minLength: 8,
+                    pattern: '(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*',
+                    error: "Password must be at least 8 characters long and contain at least one uppercase letter and one special character.",
+                }),
+            }),
+            response: t.Null(),
+        }
+    )
+    .post(
+        "/auth/join",
+        async ({ client, lucia, cookie, body }) => {
+            const hashedPassword = await hash(body.password, {
+                memoryCost: 19456,
+                timeCost: 2,
+                outputLen: 32,
+                parallelism: 1,
+            });
+
+            const user = await queries.createUser(client, {
+                email: body.email,
+                hashed_password: hashedPassword,
+            });
+
+            const session = await lucia.createSession(user.id, {});
+            const sessionCookie = lucia.createSessionCookie(session.id);
+            const sessionCookieAttributes = cookie[sessionCookie.name];
+
+            setSessionCookie(sessionCookieAttributes, sessionCookie);
+
+            return null;
+        },
+        {
+            body: t.Object({
+                email: t.String({ format: "email", error: "Invalid email." }),
+                password: t.String({
+                    minLength: 8,
+                    pattern: '(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*',
+                    error: "Password must be at least 8 characters long and contain at least one uppercase letter and one special character.",
+                }),
+            }),
+            response: t.Null(),
+        }
+    )
+    .post("/auth/logout", async ({ lucia, cookie }) => {
         const sessionCookieAttributes = cookie[lucia.sessionCookieName];
         const sessionId = sessionCookieAttributes.value;
 

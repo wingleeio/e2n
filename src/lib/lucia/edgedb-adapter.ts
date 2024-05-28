@@ -1,4 +1,4 @@
-import * as queries from "@/db/queries";
+import * as queries from "@/schema/queries";
 import type { Client } from "edgedb";
 import type { Adapter, DatabaseSession, DatabaseUser } from "lucia";
 

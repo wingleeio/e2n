@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
 
     const { api } = createMiddlewareClient(headers);
 
-    const { data } = await api.session.get();
+    const { data } = await api.auth.session.get();
 
     if (isProtectedRoute(req) && !data) {
         return NextResponse.redirect(new URL("/auth/login", req.url));
