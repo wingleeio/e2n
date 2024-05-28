@@ -1,6 +1,7 @@
+import { AUTH_HEADER } from "@/lib/constants";
 import { App } from "@/server";
 import { treaty } from "@elysiajs/eden";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const createMiddlewareClient = (headers: Headers) => {
     return treaty<App>("localhost:3000", {
@@ -8,21 +9,37 @@ const createMiddlewareClient = (headers: Headers) => {
     });
 };
 
+const createRouteMatcher = (patterns: string[]) => {
+    const regexes = patterns.map((pattern) => new RegExp(`^${pattern}$`));
+
+    return (req: NextRequest) => {
+        const pathname = req.nextUrl.pathname;
+        return regexes.some((regex) => regex.test(pathname));
+    };
+};
+
+const isProtectedRoute = createRouteMatcher([]);
+
 export async function middleware(req: NextRequest) {
-    const { api } = createMiddlewareClient(new Headers(req.headers));
+    const headers = new Headers(req.headers);
 
-    const { data, error } = await api.session.get();
+    const { api } = createMiddlewareClient(headers);
 
-    if (error) {
-        switch (error.status) {
-            default:
-                throw error.value;
-        }
+    const { data } = await api.session.get();
+
+    if (isProtectedRoute(req) && !data) {
+        return NextResponse.redirect(new URL("/login", req.url));
     }
 
-    if (!data) {
-        // TODO: This is where we redirect users for pages that require authentication
+    if (data) {
+        headers.set(AUTH_HEADER, JSON.stringify(data));
     }
+
+    return NextResponse.next({
+        request: {
+            headers,
+        },
+    });
 }
 
 export const config = {

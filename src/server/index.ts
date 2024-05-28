@@ -27,10 +27,6 @@ export const app = new Elysia({ prefix: "/api" })
                 name: t.String(),
             }),
         }
-    )
-    .post("/ping", ({ cookie: { name } }) => {
-        name.value = "test";
-        return name.value;
-    });
+    );
 
 export type App = typeof app;
