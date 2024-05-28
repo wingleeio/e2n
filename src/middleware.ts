@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
     const { data } = await api.session.get();
 
     if (isProtectedRoute(req) && !data) {
-        return NextResponse.redirect(new URL("/login", req.url));
+        return NextResponse.redirect(new URL("/auth/login", req.url));
     }
 
     if (data) {

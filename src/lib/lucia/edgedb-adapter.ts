@@ -1,5 +1,6 @@
+import * as queries from "@/db/queries";
 import type { Client } from "edgedb";
-import type { Adapter, DatabaseSession } from "lucia";
+import type { Adapter, DatabaseSession, DatabaseUser } from "lucia";
 
 export class EdgeDBAdapter implements Adapter {
     private client: Client;
@@ -8,17 +9,69 @@ export class EdgeDBAdapter implements Adapter {
         this.client = client;
     }
 
-    async deleteSession(sessionId: string) {}
+    async deleteSession(sessionId: string) {
+        await queries.deleteSession(this.client, {
+            session_id: sessionId,
+        });
+    }
 
-    async deleteUserSessions(userId: string) {}
+    async deleteUserSessions(userId: string) {
+        await queries.deleteUserSessions(this.client, {
+            user_id: userId,
+        });
+    }
 
-    async getSessionAndUser(sessionId: string) {}
+    async getSessionAndUser(
+        sessionId: string
+    ): Promise<[session: DatabaseSession | null, user: DatabaseUser | null]> {
+        const result = await queries.getSessionAndUser(this.client, {
+            session_id: sessionId,
+        });
 
-    async getUserSessions(userId: string) {}
+        if (result === null) {
+            return [null, null];
+        }
 
-    async setSession(session: DatabaseSession) {}
+        return [
+            {
+                id: result.session_id,
+                expiresAt: result.expires_at,
+                attributes: {},
+                userId: result.user.id,
+            },
+            { id: result.user.id, attributes: {} },
+        ];
+    }
 
-    async updateSessionExpiration(sessionId: string, expiresAt: Date) {}
+    async getUserSessions(userId: string) {
+        const result = await queries.getUserSessions(this.client, {
+            user_id: userId,
+        });
 
-    async deleteExpiredSessions(): Promise<void> {}
+        return result.map((session) => ({
+            id: session.session_id,
+            expiresAt: session.expires_at,
+            userId: session.user.id,
+            attributes: {},
+        }));
+    }
+
+    async setSession(session: DatabaseSession) {
+        await queries.setSession(this.client, {
+            session_id: session.id,
+            user_id: session.userId,
+            expires_at: session.expiresAt,
+        });
+    }
+
+    async updateSessionExpiration(sessionId: string, expiresAt: Date) {
+        await queries.updateSessionExpiration(this.client, {
+            session_id: sessionId,
+            expires_at: expiresAt,
+        });
+    }
+
+    async deleteExpiredSessions() {
+        await queries.deleteExpiredSessions(this.client);
+    }
 }
