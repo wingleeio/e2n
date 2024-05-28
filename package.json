@@ -6,16 +6,20 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "prebuild": "npx @edgedb/generate edgeql-js"
     },
     "dependencies": {
         "@elysiajs/eden": "^1.0.14",
+        "edgedb": "^1.5.7",
         "elysia": "^1.0.22",
+        "lucia": "^3.2.0",
         "next": "14.2.3",
         "react": "^18",
         "react-dom": "^18"
     },
     "devDependencies": {
+        "@edgedb/generate": "^0.5.3",
         "@types/node": "^20",
         "@types/react": "^18",
         "@types/react-dom": "^18",
