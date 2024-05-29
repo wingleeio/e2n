@@ -1,5 +1,5 @@
-import { auth } from "@/server/plugins/auth";
 import { Elysia } from "elysia";
+import { auth } from "@/server/plugins/auth";
 
 export const app = new Elysia({ prefix: "/api" }).use(auth);
 

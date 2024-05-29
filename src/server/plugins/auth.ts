@@ -1,8 +1,9 @@
-import { setSessionCookie } from "@/lib/lucia/set-session-cookie";
-import { ApiError } from "@/server/error";
-import { hash, verify } from "@node-rs/argon2";
 import Elysia, { t } from "elysia";
+import { hash, verify } from "@node-rs/argon2";
+
+import { ApiError } from "@/server/error";
 import { context } from "../context";
+import { setSessionCookie } from "@/lib/lucia/set-session-cookie";
 
 export const auth = new Elysia()
     .use(context)
@@ -73,18 +74,22 @@ export const auth = new Elysia()
                 parallelism: 1,
             });
 
-            const user = await queries.createUser(client, {
-                email: body.email,
-                hashed_password: hashedPassword,
-            });
+            try {
+                const user = await queries.createUser(client, {
+                    email: body.email,
+                    hashed_password: hashedPassword,
+                });
 
-            const session = await lucia.createSession(user.id, {});
-            const sessionCookie = lucia.createSessionCookie(session.id);
-            const sessionCookieAttributes = cookie[sessionCookie.name];
+                const session = await lucia.createSession(user.id, {});
+                const sessionCookie = lucia.createSessionCookie(session.id);
+                const sessionCookieAttributes = cookie[sessionCookie.name];
 
-            setSessionCookie(sessionCookieAttributes, sessionCookie);
+                setSessionCookie(sessionCookieAttributes, sessionCookie);
 
-            return null;
+                return null;
+            } catch (e) {
+                throw new ApiError(409, "Email already in use.");
+            }
         },
         {
             body: t.Object({

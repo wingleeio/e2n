@@ -24,40 +24,53 @@ import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const schema = z.object({
-    email: z.string().email({
-        message: "Please enter a valid email",
-    }),
-    password: z
-        .string()
-        .regex(new RegExp('(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*'), {
-            message:
-                "Password must contain at least one uppercase letter and one special character",
-        })
-        .min(8, {
+const schema = z
+    .object({
+        email: z.string().email(),
+        password: z
+            .string()
+            .min(8, {
+                message: "Password must be at least 8 characters long",
+            })
+            .regex(new RegExp('(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*'), {
+                message:
+                    "Password must contain at least one uppercase letter and one special character",
+            }),
+        confirmPassword: z.string().min(8, {
             message: "Password must be at least 8 characters long",
         }),
-});
+    })
+    .superRefine(({ confirmPassword, password }, ctx) => {
+        if (confirmPassword !== password) {
+            ctx.addIssue({
+                code: "custom",
+                path: ["confirmPassword"],
+                message: "The passwords do not match",
+            });
+        }
+    });
 
-type Schema = z.infer<typeof schema>;
-
-export default function LoginPage() {
+export default function RegisterForm() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const form = useForm<Schema>({
+    const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
             email: "",
+            password: "",
         },
     });
 
-    const onSubmit = async (data: Schema) => {
+    const onSubmit = async ({
+        confirmPassword,
+        ...data
+    }: z.infer<typeof schema>) => {
         setLoading(true);
-        const loadingId = toast.loading("Logging in...", {
+        const loadingId = toast.loading("Creating your account...", {
             description:
-                "Please hold on while our specialized team of space rabbits verify your credentials",
+                "Please hold on while our specialized team of space rabbits create your account",
         });
-        const { error } = await api.auth.signin.post(data);
+        const { error } = await api.auth.join.post(data);
 
         if (!error) {
             toast.success("Logged in successfully", {
@@ -69,11 +82,10 @@ export default function LoginPage() {
 
         if (error) {
             switch (error.status) {
-                case 401:
-                case 422:
-                    toast.error("Invalid email or password", {
+                case 409:
+                    toast.error("Unable to create account", {
                         description:
-                            "Please check your credentials and try again.",
+                            "There as an error creating your account. Double check your email and password and try again.",
                     });
                     break;
                 default:
@@ -91,7 +103,7 @@ export default function LoginPage() {
 
     return (
         <Form {...form}>
-            <div className="relative bg-muted rounded-md shadow-lg border border-solid w-[380px] max-w-full transition-all">
+            <div className="relative bg-muted rounded-md shadow-lg border border-solid w-[380px] max-w-full">
                 <div className="rounded-md p-8 flex flex-col items-center bg-background border-b border-solid">
                     <Link href="/">
                         <img
@@ -100,9 +112,11 @@ export default function LoginPage() {
                             alt="my logo"
                         />
                     </Link>
-                    <h1 className="font-semibold mb-2">Login to Superstack</h1>
+                    <h1 className="font-semibold mb-2">
+                        Register for Superstack
+                    </h1>
                     <p className="text-muted-foreground text-sm mb-8">
-                        Welcome back! Please login to continue
+                        Hello! Please register to continue
                     </p>
                     <div className="flex gap-2 w-full mb-4">
                         <Button variant="outline" className="w-full gap-4">
@@ -149,6 +163,19 @@ export default function LoginPage() {
                                 </FormItem>
                             )}
                         />
+                        <FormField
+                            control={form.control}
+                            name="confirmPassword"
+                            render={({ field }) => (
+                                <FormItem className="w-full mb-8 text-muted-foreground">
+                                    <FormLabel>Confirm Password</FormLabel>
+                                    <FormControl>
+                                        <Input type="password" {...field} />
+                                    </FormControl>
+                                    <FormMessage className="text-xs opacity-80 font-normal" />
+                                </FormItem>
+                            )}
+                        />
                         <Button
                             type="submit"
                             className="w-full gap-2"
@@ -163,12 +190,11 @@ export default function LoginPage() {
                         </Button>
                     </form>
                 </div>
-
                 <div className="p-4 text-center text-sm">
                     <span className="text-muted-foreground/80">
-                        Don't have an account?{" "}
+                        Have an account?{" "}
                     </span>
-                    <Link href="/join">Join now</Link>
+                    <Link href="/login">Login</Link>
                 </div>
             </div>
         </Form>
