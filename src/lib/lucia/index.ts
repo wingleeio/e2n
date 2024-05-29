@@ -1,11 +1,13 @@
+import { AUTH_COOKIE } from "@/lib/constants";
 import { client } from "@/lib/database";
+import { EdgeDBAdapter } from "@/lib/lucia/edgedb-adapter";
 import { Lucia } from "lucia";
-import { EdgeDBAdapter } from "./edgedb-adapter";
 
 const adapter = new EdgeDBAdapter(client);
 
 export const lucia = new Lucia(adapter, {
     sessionCookie: {
+        name: AUTH_COOKIE,
         expires: false,
         attributes: {
             secure: process.env.NODE_ENV === "production",

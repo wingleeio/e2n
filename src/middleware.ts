@@ -1,4 +1,4 @@
-import { AUTH_HEADER } from "@/lib/constants";
+import { AUTH_COOKIE, AUTH_HEADER } from "@/lib/constants";
 import { App } from "@/server";
 import { treaty } from "@elysiajs/eden";
 import { NextRequest, NextResponse } from "next/server";
@@ -21,6 +21,10 @@ const createRouteMatcher = (patterns: string[]) => {
 const isProtectedRoute = createRouteMatcher([]);
 
 export async function middleware(req: NextRequest) {
+    if (!req.cookies.has(AUTH_COOKIE)) {
+        return NextResponse.next();
+    }
+
     const headers = new Headers(req.headers);
 
     const { api } = createMiddlewareClient(headers);
