@@ -80,6 +80,7 @@ export class EdgeDBAdapter implements Adapter {
             session_id: session.id,
             user_id: session.userId,
             expires_at: session.expiresAt,
+            ...session.attributes,
         });
     }
 

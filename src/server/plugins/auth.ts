@@ -98,16 +98,22 @@ export const auth = new Elysia()
             response: t.Null(),
         }
     )
-    .post("/auth/logout", async ({ lucia, cookie }) => {
-        const sessionCookieAttributes = cookie[lucia.sessionCookieName];
-        const sessionId = sessionCookieAttributes.value;
+    .post(
+        "/auth/logout",
+        async ({ lucia, cookie }) => {
+            const sessionCookieAttributes = cookie[lucia.sessionCookieName];
+            const sessionId = sessionCookieAttributes.value;
 
-        const { session } = await lucia.validateSession(sessionId);
+            const { session } = await lucia.validateSession(sessionId);
 
-        if (session) {
-            sessionCookieAttributes.remove();
-            await lucia.invalidateSession(session.id);
+            if (session) {
+                sessionCookieAttributes.remove();
+                await lucia.invalidateSession(session.id);
+            }
+
+            return null;
+        },
+        {
+            response: t.Null(),
         }
-
-        return null;
-    });
+    );
