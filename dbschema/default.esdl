@@ -25,5 +25,6 @@ module default {
         required session_id: str {
             constraint exclusive;
         };
+        index on ((.session_id));
     }
 }

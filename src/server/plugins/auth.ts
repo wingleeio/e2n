@@ -1,4 +1,5 @@
 import { setSessionCookie } from "@/lib/lucia/set-session-cookie";
+import { ApiError } from "@/server/error";
 import { hash, verify } from "@node-rs/argon2";
 import Elysia, { t } from "elysia";
 import { context } from "../context";
@@ -28,7 +29,7 @@ export const auth = new Elysia()
             });
 
             if (!user) {
-                throw new Error("Invalid email or password.");
+                throw new ApiError(401, "Invalid email or password.");
             }
 
             const verified = await verify(user.hashed_password, body.password, {
@@ -39,7 +40,7 @@ export const auth = new Elysia()
             });
 
             if (!verified) {
-                throw new Error("Invalid email or password.");
+                throw new ApiError(401, "Invalid email or password.");
             }
 
             const session = await lucia.createSession(user.id, {});

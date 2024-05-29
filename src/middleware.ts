@@ -19,6 +19,7 @@ const createRouteMatcher = (patterns: string[]) => {
 };
 
 const isProtectedRoute = createRouteMatcher([]);
+const isPublicRoute = createRouteMatcher(["/join", "/login"]);
 
 export async function middleware(req: NextRequest) {
     if (!req.cookies.has(AUTH_COOKIE)) {
@@ -32,7 +33,11 @@ export async function middleware(req: NextRequest) {
     const { data } = await api.auth.session.get();
 
     if (isProtectedRoute(req) && !data) {
-        return NextResponse.redirect(new URL("/auth/login", req.url));
+        return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    if (isPublicRoute(req) && data) {
+        return NextResponse.redirect(new URL("/", req.url));
     }
 
     if (data) {
