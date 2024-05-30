@@ -12,7 +12,9 @@ This is a starter kit that provides a foundation for building web applications u
 ## Getting Started
 
 This project requires a `RESEND_API_KEY` to send emails to users. Create a `.env.local` file or rename `.env.sample` and
-add your own api key from [Resend](https://resend.com)
+add your own api key from [Resend](https://resend.com).
+
+To setup EdgeDB locally, run `edgedb project init` in the root directory of this project. If you have not setup EdgeDB before, follow the instructions on [their website](https://edgedb.com).
 
 Then you can run the development server:
 
