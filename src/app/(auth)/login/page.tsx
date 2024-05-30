@@ -164,7 +164,7 @@ export default function LoginPage() {
                     </form>
                 </div>
 
-                <div className="p-4 text-center text-sm">
+                <div className="px-8 py-4 text-sm">
                     <span className="text-muted-foreground/80">
                         Don't have an account?{" "}
                     </span>

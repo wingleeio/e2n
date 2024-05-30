@@ -9,10 +9,10 @@ import { TimeSpan, createDate } from "oslo";
 import { alphabet, generateRandomString } from "oslo/crypto";
 import { context } from "../context";
 
-export const auth = new Elysia()
+export const auth = new Elysia({ prefix: "/auth" })
     .use(context)
     .get(
-        "/auth/session",
+        "/session",
         async ({ user }) => {
             return user;
         },
@@ -28,7 +28,7 @@ export const auth = new Elysia()
         }
     )
     .post(
-        "/auth/signin",
+        "/signin",
         async ({ client, lucia, cookie, body, queries }) => {
             const user = await queries.getUserWithHashedPassword(client, {
                 email: body.email,
@@ -70,7 +70,7 @@ export const auth = new Elysia()
         }
     )
     .post(
-        "/auth/join",
+        "/join",
         async ({ client, lucia, cookie, body, queries, resend }) => {
             const hashedPassword = await hash(body.password, {
                 memoryCost: 19456,
@@ -131,7 +131,91 @@ export const auth = new Elysia()
         }
     )
     .post(
-        "/auth/logout",
+        "/verify",
+        async ({ user, client, queries, body }) => {
+            if (!user) {
+                throw new ApiError(401, "Unauthorized.");
+            }
+
+            if (user.email_verified) {
+                throw new ApiError(422, "Email already verified.");
+            }
+
+            const verified = await queries.verifyEmail(client, {
+                user_id: user.id,
+                code: body.code,
+            });
+
+            if (!verified) {
+                throw new ApiError(422, "Invalid verification code.");
+            }
+
+            await queries.updateUser(client, {
+                user_id: user.id,
+                email_verified: true,
+            });
+
+            await queries.deleteEmailVerificationCodes(client, {
+                user_id: user.id,
+            });
+
+            return null;
+        },
+        {
+            body: t.Object({
+                code: t.String({
+                    minLength: 8,
+                    maxLength: 8,
+                    pattern: "^[0-9]{8}$",
+                    error: "Invalid verification code.",
+                }),
+            }),
+            response: t.Null(),
+        }
+    )
+    .post(
+        "/resend",
+        async ({ user, resend, queries, client }) => {
+            if (!user) {
+                throw new ApiError(401, "Unauthorized.");
+            }
+
+            if (user.email_verified) {
+                throw new ApiError(422, "Email already verified.");
+            }
+
+            await queries.deleteEmailVerificationCodes(client, {
+                user_id: user.id,
+            });
+
+            const emailVerification = await queries.createEmailVerification(
+                client,
+                {
+                    code: generateRandomString(8, alphabet("0-9")),
+                    user_id: user.id,
+                    expires_at: createDate(new TimeSpan(15, "m")),
+                }
+            );
+
+            const { error } = await resend.emails.send({
+                from: "EdgeDB Elysia Next.js <no-reply@resend.uwulabs.io>",
+                to: [user.email],
+                subject: "Verify your email address",
+                react: EmailVerification({ code: emailVerification.code }),
+            });
+
+            if (error) {
+                throw new ApiError(500, "Failed to send email verification.");
+            }
+
+            return null;
+        },
+        {
+            response: t.Null(),
+        }
+    )
+    .post(
+        "/logout",
         async ({ lucia, cookie }) => {
             const sessionCookieAttributes = cookie[lucia.sessionCookieName];
             const sessionId = sessionCookieAttributes.value;

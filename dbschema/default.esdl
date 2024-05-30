@@ -29,11 +29,11 @@ module default {
     }
 
     type EmailVerificationCode extending Base {
-        required user: User;
-        required code: str {
+        required user: User {
             constraint exclusive;
         };
+        required code: str;
         required expires_at: datetime;
-        index on ((.code));
+        index on ((.user));
     }
 }
