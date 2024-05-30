@@ -2,7 +2,9 @@
 
 import { ClientSignedIn } from "@/components/client-signed-in";
 import { ClientSignedOut } from "@/components/client-signed-out";
+import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export const TestComponent = () => {
@@ -12,47 +14,42 @@ export const TestComponent = () => {
             <h1>Hello, world!</h1>
             <p>
                 <ClientSignedIn>
-                    {(user) => <>Welcome, {user.id}!</>}
+                    {(user) => (
+                        <>
+                            Welcome, {user.id}!
+                            {!user.email_verified && (
+                                <>
+                                    <br />
+                                    Your email is not verified.{" "}
+                                    <Link href="/verify">
+                                        Click here to enter your verification
+                                        code.
+                                    </Link>
+                                </>
+                            )}
+                        </>
+                    )}
                 </ClientSignedIn>
                 <ClientSignedOut>You are not logged in!</ClientSignedOut>
             </p>
             <div className="flex gap-4">
                 <ClientSignedIn>
-                    <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    <Button
                         onClick={async () => {
                             await api.auth.logout.post();
                             router.refresh();
                         }}
                     >
                         Logout
-                    </button>
+                    </Button>
                 </ClientSignedIn>
                 <ClientSignedOut>
-                    <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={async () => {
-                            await api.auth.signin.post({
-                                email: "test@test.com",
-                                password: "@Testing1",
-                            });
-                            router.refresh();
-                        }}
-                    >
-                        Sign In
-                    </button>
-                    <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={async () => {
-                            await api.auth.join.post({
-                                email: "test@test.com",
-                                password: "@Testing1",
-                            });
-                            router.refresh();
-                        }}
-                    >
-                        Join
-                    </button>
+                    <Link href="/login">
+                        <Button>Sign In</Button>
+                    </Link>
+                    <Link href="/join">
+                        <Button>Join</Button>
+                    </Link>
                 </ClientSignedOut>
             </div>
         </div>
