@@ -90,7 +90,7 @@ const SomeComponent = () => {
 };
 ```
 
-`ClientSignedIn` can also take a callback as a child. Within this callback you have access to the `user` object.
+`ClientSignedIn` and `ServerSignedIn` can also take a callback as a child. Within this callback you have access to the `user` object.
 
 ```tsx
 "use client";
