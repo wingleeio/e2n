@@ -227,6 +227,14 @@
   dependencies:
     nanoid "^5.0.1"
 
+"@elysiajs/swagger@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@elysiajs/swagger/-/swagger-1.0.5.tgz#f396c1fa75bda7acbc1b46d817ca57abb96a9981"
+  integrity sha512-DEy5iwLMiathyRcCteJYrK+VITiDODQPt4ahKC0Qyqg09Yuo0JKz7/nBGTbm1ogmfdzCopgLxB1QcWore1C1/A==
+  dependencies:
+    lodash.clonedeep "^4.5.0"
+    openapi-types "^12.1.3"
+
 "@emnapi/core@^0.45.0":
   version "0.45.0"
   resolved "https://registry.yarnpkg.com/@emnapi/core/-/core-0.45.0.tgz#e58dc1f70ab3af3f6708991ba56d988088daf204"
@@ -2779,6 +2787,11 @@ loader-runner@^4.2.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-4.3.0.tgz#c1b4a163b99f614830353b16755e7149ac2314e1"
   integrity sha512-3R/1M+yS3j5ou80Me59j7F9IMs4PXs3VqRrm0TU3AbKPxlmpoY1TNscJV/oGJXo8qCatFGTfDbY6W6ipGOYXfg==
+
+lodash.clonedeep@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
+  integrity sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==
 
 log-symbols@4.1.0, log-symbols@^4.1.0:
   version "4.1.0"
