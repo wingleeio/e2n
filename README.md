@@ -16,6 +16,12 @@ add your own api key from [Resend](https://resend.com).
 
 To setup EdgeDB locally, run `edgedb project init` in the root directory of this project. If you have not setup EdgeDB before, follow the instructions on [their website](https://edgedb.com).
 
+After EdgeDB is setup, you have to generate the query functions using the following command:
+
+```bash
+yarn generate:queries
+```
+
 Then you can run the development server:
 
 ```bash
