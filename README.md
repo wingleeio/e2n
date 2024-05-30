@@ -39,6 +39,7 @@ This project contains a handful of useful utilities to make developing your proj
 Once a user is authenticated, you have access to the session on the client side with the `useAuth` hook.
 
 ```tsx
+"use client";
 import { useAuth } from "@/hooks/use-auth";
 
 const SomeComponent = () => {
@@ -54,9 +55,28 @@ const SomeComponent = () => {
 };
 ```
 
+Similarly, you have access to the user session on the server side using the `auth` helper function.
+
+```tsx
+import { auth } from "@/lib/auth";
+
+export default function SomeComponent() {
+    const session = auth();
+
+    if (session.isAuthenticated) {
+        // Here session.user will now be defined
+
+        console.log(session.user.id);
+    }
+
+    return null;
+}
+```
+
 You can manage what to render the server or client side using `ClientSignedIn`, `ClientSignedOut`, `ServerSignedIn`, and `ServerSignedOut`.
 
 ```tsx
+"use client";
 import { ClientSignedIn } from "@/components/client-signed-in";
 import { ClientSignedOut } from "@/components/client-signed-out";
 
@@ -73,6 +93,7 @@ const SomeComponent = () => {
 `ClientSignedIn` can also take a callback as a child. Within this callback you have access to the `user` object.
 
 ```tsx
+"use client";
 import { ClientSignedIn } from "@/components/client-signed-in";
 import { ClientSignedOut } from "@/components/client-signed-out";
 
