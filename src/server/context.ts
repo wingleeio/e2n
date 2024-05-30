@@ -1,6 +1,7 @@
 import { client } from "@/lib/database";
 import { lucia } from "@/lib/lucia";
 import { setSessionCookie } from "@/lib/lucia/set-session-cookie";
+import { resend } from "@/lib/resend";
 import * as queries from "@/schema/queries";
 import Elysia from "elysia";
 
@@ -9,6 +10,7 @@ export const context = new Elysia()
         client,
         lucia,
         queries,
+        resend,
     })
     .derive({ as: "global" }, async ({ lucia, cookie }) => {
         const sessionCookieAttributes = cookie[lucia.sessionCookieName];

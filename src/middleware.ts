@@ -18,7 +18,7 @@ const createRouteMatcher = (patterns: string[]) => {
     };
 };
 
-const isProtectedRoute = createRouteMatcher([]);
+const isProtectedRoute = createRouteMatcher(["/verify"]);
 const isPublicRoute = createRouteMatcher(["/join", "/login"]);
 
 export async function middleware(req: NextRequest) {

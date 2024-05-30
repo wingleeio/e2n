@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 type ClientSignedInProps =
     | {
           children: (
-              user: NonNullable<ReturnType<typeof useAuth>["user"]>
+              user: NonNullable<ReturnType<typeof useAuth>["user"]>,
           ) => React.ReactNode;
       }
     | {

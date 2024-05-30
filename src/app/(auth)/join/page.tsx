@@ -1,6 +1,5 @@
 "use client";
 
-import { FaDiscord, FaGithub } from "react-icons/fa";
 import {
     Form,
     FormControl,
@@ -9,20 +8,21 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import { FaDiscord, FaGithub } from "react-icons/fa";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { Loader2 } from "lucide-react";
-import { RiArrowRightLine } from "react-icons/ri";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/lib/api";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { RiArrowRightLine } from "react-icons/ri";
+import { toast } from "sonner";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z
     .object({
@@ -73,10 +73,10 @@ export default function RegisterForm() {
         const { error } = await api.auth.join.post(data);
 
         if (!error) {
-            toast.success("Logged in successfully", {
-                description: "We will redirect you to where you left off",
+            toast.success("Created account successfully", {
+                description: "Sending you a code to verify your email.",
             });
-            router.push("/");
+            router.push("/verify");
             router.refresh();
         }
 
@@ -104,7 +104,7 @@ export default function RegisterForm() {
     return (
         <Form {...form}>
             <div className="relative bg-muted rounded-md shadow-lg border border-solid w-[380px] max-w-full">
-                <div className="rounded-md p-8 flex flex-col items-center bg-background border-b border-solid">
+                <div className="rounded-md p-8 flex flex-col bg-background border-b border-solid">
                     <Link href="/">
                         <img
                             className="h-8 mb-8"

@@ -8,5 +8,6 @@ select session {
   user: {
     id,
     email,
+    email_verified,
   }
 }

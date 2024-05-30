@@ -16,7 +16,7 @@ module default {
             constraint exclusive;
         };
         required hashed_password: str;
-
+        required email_verified: bool;
     }
 
     type Session extending Base {
@@ -26,5 +26,14 @@ module default {
             constraint exclusive;
         };
         index on ((.session_id));
+    }
+
+    type EmailVerificationCode extending Base {
+        required user: User;
+        required code: str {
+            constraint exclusive;
+        };
+        required expires_at: datetime;
+        index on ((.code));
     }
 }
