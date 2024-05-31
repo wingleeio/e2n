@@ -1,5 +1,6 @@
 "use client";
 
+import { FaDiscord, FaGithub } from "react-icons/fa";
 import {
     Form,
     FormControl,
@@ -8,21 +9,20 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { FaDiscord, FaGithub } from "react-icons/fa";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
+import { RiArrowRightLine } from "react-icons/ri";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/lib/api";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { RiArrowRightLine } from "react-icons/ri";
-import { toast } from "sonner";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
     email: z.string().email({
@@ -105,12 +105,16 @@ export default function LoginPage() {
                         Welcome back! Please login to continue
                     </p>
                     <div className="flex gap-2 w-full mb-4">
-                        <Button variant="outline" className="w-full gap-4">
-                            <FaGithub className="h-5 w-5" />
-                        </Button>
-                        <Button variant="outline" className="w-full gap-4">
-                            <FaDiscord className="h-5 w-5 fill-[#7289da]" />
-                        </Button>
+                        <Link href="/api/auth/oauth/github" className="flex-1">
+                            <Button variant="outline" className="w-full gap-4">
+                                <FaGithub className="h-5 w-5" />
+                            </Button>
+                        </Link>
+                        <Link href="/api/auth/oauth/github" className="flex-1">
+                            <Button variant="outline" className="w-full gap-4">
+                                <FaDiscord className="h-5 w-5 fill-[#7289da]" />
+                            </Button>
+                        </Link>
                     </div>
                     <div className="mb-4 w-full flex items-center">
                         <Separator className="flex-1" />

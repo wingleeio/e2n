@@ -20,6 +20,7 @@
         "@radix-ui/react-slot": "^1.0.2",
         "@react-email/components": "^0.0.19",
         "@sinclair/typebox": "^0.32.31",
+        "arctic": "^1.9.0",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "edgedb": "^1.5.7",

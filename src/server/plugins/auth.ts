@@ -1,13 +1,15 @@
-import { hash, verify } from "@node-rs/argon2";
 import Elysia, { t } from "elysia";
-
-import { EmailVerification } from "@/emails/email-verification";
-import { setSessionCookie } from "@/lib/lucia/set-session-cookie";
-import { CreateUserReturns } from "@/schema/queries";
-import { ApiError } from "@/server/error";
 import { TimeSpan, createDate } from "oslo";
 import { alphabet, generateRandomString } from "oslo/crypto";
+import { hash, verify } from "@node-rs/argon2";
+
+import { ApiError } from "@/server/error";
+import { CreateUserReturns } from "@/schema/queries";
+import { EmailVerification } from "@/emails/email-verification";
+import { IS_PRODUCTION } from "@/lib/constants";
 import { context } from "../context";
+import { generateState } from "arctic";
+import { setSessionCookie } from "@/lib/lucia/set-session-cookie";
 
 export const auth = new Elysia({ prefix: "/auth" })
     .use(context)
@@ -212,6 +214,91 @@ export const auth = new Elysia({ prefix: "/auth" })
         },
         {
             response: t.Null(),
+        }
+    )
+    .get(
+        "/oauth/:provider",
+        async ({ oauth, params, redirect, cookie }) => {
+            const state = generateState();
+
+            let url: URL;
+
+            switch (params.provider) {
+                case "github":
+                    url = await oauth.github.createAuthorizationURL(state);
+                    break;
+                default:
+                    throw new ApiError(404, "Provider not found.");
+            }
+
+            cookie["oauth_state"].value = state;
+            cookie["oauth_state"].maxAge = 60 * 10;
+            cookie["oauth_state"].httpOnly = true;
+            cookie["oauth_state"].secure = IS_PRODUCTION;
+            cookie["oauth_state"].path = "/";
+
+            cookie["oauth_provider"].value = params.provider;
+            cookie["oauth_provider"].maxAge = 60 * 10;
+            cookie["oauth_provider"].httpOnly = true;
+            cookie["oauth_provider"].secure = IS_PRODUCTION;
+            cookie["oauth_provider"].path = "/";
+
+            // TODO: This redirect is not properly set. The client_id is undefined for some reason.
+            return redirect(url.toString());
+        },
+        {
+            params: t.Object({
+                provider: t.Union([t.Literal("github")]),
+            }),
+        }
+    )
+    .get(
+        "/oauth/callback",
+        async ({ cookie, query, oauth }) => {
+            const provider = cookie["oauth_provider"].value;
+            const storedState = cookie["oauth_state"].value;
+            const { code, state } = query;
+
+            if (
+                !provider ||
+                !code ||
+                !state ||
+                !storedState ||
+                state !== storedState
+            ) {
+                throw new ApiError(400, "Invalid state or code.");
+            }
+
+            switch (provider) {
+                case "github":
+                    {
+                        const tokens =
+                            await oauth.github.validateAuthorizationCode(code);
+                        const response = await fetch(
+                            "https://api.github.com/user",
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${tokens.accessToken}`,
+                                },
+                            }
+                        );
+                        const user: { email: string } = await response.json();
+                        console.log(user);
+                    }
+                    break;
+                default:
+                    throw new ApiError(404, "Provider not found.");
+            }
+        },
+        {
+            query: t.Object({
+                code: t.String(),
+                state: t.String(),
+            }),
+            cookie: t.Cookie({
+                oauth_provider: t.Union([t.Literal("github")]),
+                oauth_state: t.String(),
+            }),
         }
     )
     .post(
