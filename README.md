@@ -120,7 +120,7 @@ const isProtectedRoute = createRouteMatcher(["/verify"]);
 const isPublicRoute = createRouteMatcher(["/join", "/login"]);
 ```
 
-To change the OAuth providers, you can add or remove them from `@/lib/lucia/oauth`. Take a look at the following example adding Discord as an OAuth provider for reference.
+To change the OAuth providers, you can add or remove them from `@/lib/lucia/oauth`. Take a look at the following example adding Discord as an OAuth provider for reference. In order for OAuth to work properly, and `id` and `email` must be returned in `getAttributes`
 
 ```ts
 export const oauth: OAuthProviders = {
