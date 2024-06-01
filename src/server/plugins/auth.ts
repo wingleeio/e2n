@@ -38,6 +38,10 @@ export const auth = new Elysia({ prefix: "/auth" })
                 throw new ApiError(401, "Invalid email or password.");
             }
 
+            if (!user.hashed_password) {
+                throw new ApiError(401, "Invalid email or password.");
+            }
+
             const verified = await verify(user.hashed_password ?? "", body.password, {
                 memoryCost: 19456,
                 timeCost: 2,
