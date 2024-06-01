@@ -147,3 +147,13 @@ export const oauth: OAuthProviders = {
     },
 };
 ```
+
+Here is how you can invoke an OAuth login.
+
+```ts
+import Link from "next/link";
+
+const SomeComponent = () => {
+    return <Link href="/oauth/discord">Login with your discord account.</Link>;
+};
+```
