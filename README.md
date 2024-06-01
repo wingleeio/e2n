@@ -7,7 +7,6 @@ This is a starter kit that provides a foundation for building web applications u
 -   [x] Fully typesafe API client powered by ElysiaJS
 -   [x] Authentication with email verification codes using Lucia and Resend
 -   [x] EdgeDB integration
--   [ ] Stripe integration
 
 ## TODO
 
