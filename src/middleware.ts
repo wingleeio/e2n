@@ -1,7 +1,8 @@
 import { AUTH_COOKIE, AUTH_HEADER } from "@/lib/constants";
+import { NextRequest, NextResponse } from "next/server";
+
 import { App } from "@/server";
 import { treaty } from "@elysiajs/eden";
-import { NextRequest, NextResponse } from "next/server";
 
 const createMiddlewareClient = (headers: Headers) => {
     return treaty<App>("localhost:3000", {
@@ -52,5 +53,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    matcher: "/((?!api|oauth|_next/static|_next/image|favicon.ico).*)",
 };

@@ -105,7 +105,7 @@ export default function LoginPage() {
                         Welcome back! Please login to continue
                     </p>
                     <div className="flex gap-2 w-full mb-4">
-                        <Link href="/api/auth/oauth/github" className="flex-1">
+                        <Link href="/oauth/github" className="flex-1">
                             <Button variant="outline" className="w-full gap-4">
                                 <FaGithub className="h-5 w-5" />
                             </Button>
