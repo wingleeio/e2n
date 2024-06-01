@@ -9,6 +9,11 @@ This is a starter kit that provides a foundation for building web applications u
 -   [x] EdgeDB integration
 -   [ ] Stripe integration
 
+## TODO
+
+-   [ ] Update OAuth2 error handling (User with email already exists, etc)
+-   [ ] Stripe integration
+
 ## Getting Started
 
 This project requires a `RESEND_API_KEY` to send emails to users. Create a `.env.local` file or rename `.env.sample` and
@@ -114,8 +119,3 @@ Protected or public routes can be defined in `middleware.ts`. Update the arrays 
 const isProtectedRoute = createRouteMatcher(["/verify"]);
 const isPublicRoute = createRouteMatcher(["/join", "/login"]);
 ```
-
-## TODO
-
--   [ ] Update OAuth2 error handling (User with email already exists, etc)
--   [ ] Stripe integration
