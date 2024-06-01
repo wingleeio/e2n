@@ -21,9 +21,7 @@ export class EdgeDBAdapter implements Adapter {
         });
     }
 
-    async getSessionAndUser(
-        sessionId: string
-    ): Promise<[session: DatabaseSession | null, user: DatabaseUser | null]> {
+    async getSessionAndUser(sessionId: string): Promise<[session: DatabaseSession | null, user: DatabaseUser | null]> {
         const result = await queries.getSessionAndUser(this.client, {
             session_id: sessionId,
         });
@@ -32,13 +30,7 @@ export class EdgeDBAdapter implements Adapter {
             return [null, null];
         }
 
-        const {
-            id: _,
-            session_id,
-            expires_at,
-            user,
-            ...sessionAttributes
-        } = result;
+        const { id: _, session_id, expires_at, user, ...sessionAttributes } = result;
         const { id: userId, ...userAttributes } = user;
 
         return [
@@ -58,13 +50,7 @@ export class EdgeDBAdapter implements Adapter {
         });
 
         return result.map((session) => {
-            const {
-                id: _,
-                session_id,
-                expires_at,
-                user,
-                ...sessionAttributes
-            } = session;
+            const { id: _, session_id, expires_at, user, ...sessionAttributes } = session;
 
             return {
                 id: session_id,

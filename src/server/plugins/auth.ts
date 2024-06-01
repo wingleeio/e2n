@@ -1,15 +1,13 @@
+import { hash, verify } from "@node-rs/argon2";
 import Elysia, { t } from "elysia";
 import { TimeSpan, createDate } from "oslo";
 import { alphabet, generateRandomString } from "oslo/crypto";
-import { hash, verify } from "@node-rs/argon2";
 
-import { ApiError } from "@/server/error";
-import { CreateUserReturns } from "@/schema/queries";
 import { EmailVerification } from "@/emails/email-verification";
-import { IS_PRODUCTION } from "@/lib/constants";
-import { context } from "../context";
-import { generateState } from "arctic";
 import { setSessionCookie } from "@/lib/lucia/set-session-cookie";
+import { CreateUserReturns } from "@/schema/queries";
+import { ApiError } from "@/server/error";
+import { context } from "../context";
 
 export const auth = new Elysia({ prefix: "/auth" })
     .use(context)
@@ -40,7 +38,7 @@ export const auth = new Elysia({ prefix: "/auth" })
                 throw new ApiError(401, "Invalid email or password.");
             }
 
-            const verified = await verify(user.hashed_password, body.password, {
+            const verified = await verify(user.hashed_password ?? "", body.password, {
                 memoryCost: 19456,
                 timeCost: 2,
                 outputLen: 32,
@@ -87,19 +85,17 @@ export const auth = new Elysia({ prefix: "/auth" })
                 user = await queries.createUser(client, {
                     email: body.email,
                     hashed_password: hashedPassword,
+                    email_verified: false,
                 });
             } catch (e) {
                 throw new ApiError(422, "Email already in use.");
             }
 
-            const emailVerification = await queries.createEmailVerification(
-                client,
-                {
-                    code: generateRandomString(8, alphabet("0-9")),
-                    user_id: user.id,
-                    expires_at: createDate(new TimeSpan(15, "m")),
-                }
-            );
+            const emailVerification = await queries.createEmailVerification(client, {
+                code: generateRandomString(8, alphabet("0-9")),
+                user_id: user.id,
+                expires_at: createDate(new TimeSpan(15, "m")),
+            });
 
             const { error } = await resend.emails.send({
                 from: "EdgeDB Elysia Next.js <no-reply@resend.uwulabs.io>",
@@ -190,14 +186,11 @@ export const auth = new Elysia({ prefix: "/auth" })
                 user_id: user.id,
             });
 
-            const emailVerification = await queries.createEmailVerification(
-                client,
-                {
-                    code: generateRandomString(8, alphabet("0-9")),
-                    user_id: user.id,
-                    expires_at: createDate(new TimeSpan(15, "m")),
-                }
-            );
+            const emailVerification = await queries.createEmailVerification(client, {
+                code: generateRandomString(8, alphabet("0-9")),
+                user_id: user.id,
+                expires_at: createDate(new TimeSpan(15, "m")),
+            });
 
             const { error } = await resend.emails.send({
                 from: "EdgeDB Elysia Next.js <no-reply@resend.uwulabs.io>",

@@ -15,8 +15,18 @@ module default {
         required email: str {
             constraint exclusive;
         };
-        required hashed_password: str;
+        hashed_password: str;
         required email_verified: bool;
+    }
+
+    type OAuth2Account extending Base {
+        required user: User;
+        required provider: str;
+        required provider_user_id: str {
+            constraint exclusive;
+        };
+        index on (.provider);
+        index on (.provider_user_id)
     }
 
     type Session extending Base {

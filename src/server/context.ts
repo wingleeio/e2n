@@ -1,11 +1,10 @@
 import * as queries from "@/schema/queries";
 
-import Elysia from "elysia";
 import { client } from "@/lib/database";
 import { lucia } from "@/lib/lucia";
-import { oauth } from "@/lib/lucia/oauth";
-import { resend } from "@/lib/resend";
 import { setSessionCookie } from "@/lib/lucia/set-session-cookie";
+import { resend } from "@/lib/resend";
+import Elysia from "elysia";
 
 export const context = new Elysia()
     .decorate({
@@ -13,7 +12,6 @@ export const context = new Elysia()
         lucia,
         queries,
         resend,
-        oauth,
     })
     .derive({ as: "global" }, async ({ lucia, cookie }) => {
         const sessionCookieAttributes = cookie[lucia.sessionCookieName];

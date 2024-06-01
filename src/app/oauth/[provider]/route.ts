@@ -1,7 +1,7 @@
 import { OAuthProvider, oauth } from "@/lib/lucia/oauth";
 
-import { cookies } from "next/headers";
 import { generateState } from "arctic";
+import { cookies } from "next/headers";
 
 type RouteConfig = {
     params: {
@@ -9,12 +9,10 @@ type RouteConfig = {
     };
 };
 
-export async function GET(
-    _: Request,
-    { params }: RouteConfig
-): Promise<Response> {
+export async function GET(_: Request, { params }: RouteConfig): Promise<Response> {
     const state = generateState();
-    const url = await oauth[params.provider].createAuthorizationURL(state);
+    const provider = oauth[params.provider];
+    const url = await provider.client.createAuthorizationURL(state);
 
     cookies().set("oauth_provider", params.provider, {
         path: "/",

@@ -1,20 +1,10 @@
-import {
-    Body,
-    Container,
-    Head,
-    Heading,
-    Html,
-    Preview,
-    Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Preview, Text } from "@react-email/components";
 
 interface EmailVerificationProps {
     code: string;
 }
 
-export const EmailVerification = ({
-    code,
-}: Readonly<EmailVerificationProps>) => {
+export const EmailVerification = ({ code }: Readonly<EmailVerificationProps>) => {
     return (
         <Html>
             <Head />
@@ -34,8 +24,7 @@ export const EmailVerification = ({
                             marginBottom: "16px",
                         }}
                     >
-                        If you didn&apos;t try to join, you can safely ignore
-                        this email.
+                        If you didn&apos;t try to join, you can safely ignore this email.
                     </Text>
                 </Container>
             </Body>

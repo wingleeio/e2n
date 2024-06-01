@@ -1,37 +1,42 @@
 import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "@/lib/constants";
 import { GitHub, OAuth2Provider } from "arctic";
 
+type OAuth = {
+    client: OAuth2Provider;
+    getAttributes: (accessToken: string) => Promise<{ email: string | undefined; id: string | number | undefined }>;
+};
+
 export type OAuthProvider = "github";
 
-export const oauth: { [k in OAuthProvider]: OAuth2Provider } = {
-    github: new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET),
-};
+export const oauth: { [k in OAuthProvider]: OAuth } = {
+    github: {
+        client: new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET),
+        getAttributes: async (accessToken: string) => {
+            const headers = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            };
+            const responses = await Promise.all([
+                fetch("https://api.github.com/user", headers),
+                fetch("https://api.github.com/user/emails", headers),
+            ]);
 
-export type getAttributes = (
-    accessToken: string
-) => Promise<{ email: string | undefined }>;
+            const user: {
+                id: number;
+            } = await responses[0].json();
 
-const attributes: { [k in OAuthProvider]: getAttributes } = {
-    github: async (accessToken: string) => {
-        const response = await fetch("https://api.github.com/user/emails", {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
+            const emails: {
+                email: string;
+                primary: boolean;
+            }[] = await responses[1].json();
 
-        const emails: {
-            email: string;
-            primary: boolean;
-        }[] = await response.json();
+            const email = emails.find((email) => email.primary)?.email;
 
-        const email = emails.find((email) => email.primary)?.email;
-
-        return {
-            email,
-        };
+            return {
+                id: user.id,
+                email,
+            };
+        },
     },
-};
-
-export const getAttributes = async (provider: OAuthProvider, token: string) => {
-    return attributes[provider](token);
 };
