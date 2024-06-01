@@ -45,18 +45,21 @@ export async function GET(req: Request) {
             },
         });
     }
-
     let user: CreateUserReturns;
 
     try {
-        user = await createUser(client, {
-            email,
-            email_verified: true,
-        });
-        await createOauthAccount(client, {
-            provider: storedProvider,
-            provider_user_id: `${storedProvider}:${id}`,
-            user_id: user.id,
+        user = await client.transaction(async (tx) => {
+            const user = await createUser(tx, {
+                email,
+                email_verified: true,
+            });
+            await createOauthAccount(tx, {
+                provider: storedProvider,
+                provider_user_id: `${storedProvider}:${id}`,
+                user_id: user.id,
+            });
+
+            return user;
         });
     } catch (e) {
         return new Response(null, {

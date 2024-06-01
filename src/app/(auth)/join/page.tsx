@@ -95,7 +95,7 @@ export default function RegisterForm() {
                     <Link href="/">
                         <img className="h-8 mb-8" src="/logo.svg" alt="my logo" />
                     </Link>
-                    <h1 className="font-semibold mb-2">Register for Superstack</h1>
+                    <h1 className="font-semibold mb-2">Register</h1>
                     <p className="text-muted-foreground text-sm mb-8">Hello! Please register to continue</p>
                     <div className="flex gap-2 w-full mb-4">
                         <Link href="/oauth/github" className="flex-1">

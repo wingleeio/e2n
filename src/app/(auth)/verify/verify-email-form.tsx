@@ -51,6 +51,7 @@ export const VerifyEmailForm = () => {
                 description: "We will redirect you to where you left off",
             });
             router.push("/");
+            router.refresh();
         }
 
         if (error) {
