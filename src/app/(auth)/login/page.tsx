@@ -3,6 +3,7 @@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { FaDiscord, FaGithub } from "react-icons/fa";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +11,7 @@ import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { RiArrowRightLine } from "react-icons/ri";
@@ -35,6 +36,7 @@ type Schema = z.infer<typeof schema>;
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
     const form = useForm<Schema>({
         resolver: zodResolver(schema),
@@ -42,7 +44,6 @@ export default function LoginPage() {
             email: "",
         },
     });
-
     const onSubmit = async (data: Schema) => {
         setLoading(true);
         const loadingId = toast.loading("Logging in...", {
@@ -135,9 +136,17 @@ export default function LoginPage() {
                             <span>Continue</span>
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RiArrowRightLine />}
                         </Button>
+                        {searchParams.get("error") === "oauth_error" && (
+                            <Alert className="mt-8 text-white bg-red-500">
+                                <AlertTitle className="text-sm font-semibold">Social Login Error</AlertTitle>
+                                <AlertDescription>
+                                    There was an error connection your social account. Please try again with a different
+                                    account or login using email and password
+                                </AlertDescription>
+                            </Alert>
+                        )}
                     </form>
                 </div>
-
                 <div className="px-8 py-4 text-sm">
                     <span className="text-muted-foreground/80">Don't have an account? </span>
                     <Link href="/join">Join now</Link>

@@ -21,10 +21,7 @@ export const TestComponent = () => {
                                 <>
                                     <br />
                                     Your email is not verified.{" "}
-                                    <Link href="/verify">
-                                        Click here to enter your verification
-                                        code.
-                                    </Link>
+                                    <Link href="/verify">Click here to enter your verification code.</Link>
                                 </>
                             )}
                         </>

@@ -24,7 +24,10 @@ export async function GET(req: Request) {
 
     if (!email || !id) {
         return new Response(null, {
-            status: 400,
+            status: 302,
+            headers: {
+                Location: "/login?error=oauth_error",
+            },
         });
     }
 
@@ -45,6 +48,7 @@ export async function GET(req: Request) {
             },
         });
     }
+
     let user: CreateUserReturns;
 
     try {
@@ -63,7 +67,10 @@ export async function GET(req: Request) {
         });
     } catch (e) {
         return new Response(null, {
-            status: 400,
+            status: 302,
+            headers: {
+                Location: "/login?error=oauth_error",
+            },
         });
     }
 
