@@ -1,4 +1,4 @@
-# [e2n Stack - @wingleeio](https://github.com/wingleeio/e2n)
+# e2n Stack
 
 This is a starter kit that provides a foundation for building web applications using ElysiaJS and Next.js.
 
