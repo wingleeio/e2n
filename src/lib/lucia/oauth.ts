@@ -1,4 +1,10 @@
-import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "@/lib/constants";
+import {
+    DISCORD_CLIENT_ID,
+    DISCORD_CLIENT_SECRET,
+    GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET,
+    OAUTH_CALLBACK_URL,
+} from "@/lib/constants";
 import { Discord, GitHub } from "arctic";
 
 type OAuth = {
@@ -13,7 +19,7 @@ type OAuthProviders = { [k in OAuthProvider]: OAuth };
 
 export const oauth: OAuthProviders = {
     discord: {
-        client: new Discord(DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, "http://localhost:3000/oauth/callback"),
+        client: new Discord(DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, OAUTH_CALLBACK_URL),
         scopes: ["identify", "email"],
         getAttributes: async (accessToken: string) => {
             const headers = {
