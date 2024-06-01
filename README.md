@@ -6,6 +6,7 @@ This is a starter kit that provides a foundation for building web applications u
 
 -   [x] Fully typesafe API client powered by ElysiaJS
 -   [x] Authentication with email verification codes using Lucia and Resend
+-   [x] OAuth using Arctic
 -   [x] EdgeDB integration
 
 ## TODO
@@ -117,4 +118,32 @@ Protected or public routes can be defined in `middleware.ts`. Update the arrays 
 // These functions can also take regex matching strings
 const isProtectedRoute = createRouteMatcher(["/verify"]);
 const isPublicRoute = createRouteMatcher(["/join", "/login"]);
+```
+
+To change the OAuth providers, you can add or remove them from `@/lib/lucia/oauth`. Take a look at the following example adding Discord as an OAuth provider for reference.
+
+```ts
+export const oauth: OAuthProviders = {
+    discord: {
+        client: new Discord(DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, "http://localhost:3000/oauth/callback"),
+        scopes: ["identify", "email"],
+        getAttributes: async (accessToken: string) => {
+            const headers = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            };
+            const response = await fetch("https://discord.com/api/users/@me", headers);
+            const user: {
+                email: string;
+                id: string;
+            } = await response.json();
+
+            return {
+                email: user.email,
+                id: user.id,
+            };
+        },
+    },
+};
 ```

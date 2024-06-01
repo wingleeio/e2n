@@ -9,7 +9,9 @@ type OAuth = {
 
 export type OAuthProvider = "github" | "discord";
 
-export const oauth: { [k in OAuthProvider]: OAuth } = {
+type OAuthProviders = { [k in OAuthProvider]: OAuth };
+
+export const oauth: OAuthProviders = {
     discord: {
         client: new Discord(DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, "http://localhost:3000/oauth/callback"),
         scopes: ["identify", "email"],
