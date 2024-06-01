@@ -12,7 +12,9 @@ type RouteConfig = {
 export async function GET(_: Request, { params }: RouteConfig): Promise<Response> {
     const state = generateState();
     const provider = oauth[params.provider];
-    const url = await provider.client.createAuthorizationURL(state);
+    const url = await provider.client.createAuthorizationURL(state, {
+        scopes: provider.scopes,
+    });
 
     cookies().set("oauth_provider", params.provider, {
         path: "/",

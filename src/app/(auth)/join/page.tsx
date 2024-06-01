@@ -1,13 +1,6 @@
 "use client";
 
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { FaDiscord, FaGithub } from "react-icons/fa";
 
 import { Button } from "@/components/ui/button";
@@ -33,8 +26,7 @@ const schema = z
                 message: "Password must be at least 8 characters long",
             })
             .regex(new RegExp('(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*'), {
-                message:
-                    "Password must contain at least one uppercase letter and one special character",
+                message: "Password must contain at least one uppercase letter and one special character",
             }),
         confirmPassword: z.string().min(8, {
             message: "Password must be at least 8 characters long",
@@ -61,14 +53,10 @@ export default function RegisterForm() {
         },
     });
 
-    const onSubmit = async ({
-        confirmPassword,
-        ...data
-    }: z.infer<typeof schema>) => {
+    const onSubmit = async ({ confirmPassword, ...data }: z.infer<typeof schema>) => {
         setLoading(true);
         const loadingId = toast.loading("Creating your account...", {
-            description:
-                "Please hold on while our specialized team of space rabbits create your account",
+            description: "Please hold on while our specialized team of space rabbits create your account",
         });
         const { error } = await api.auth.join.post(data);
 
@@ -90,8 +78,7 @@ export default function RegisterForm() {
                     break;
                 default:
                     toast.error("An error occurred. Please try again later.", {
-                        description:
-                            "The error has been logged and we will investigate it shortly.",
+                        description: "The error has been logged and we will investigate it shortly.",
                     });
                     break;
             }
@@ -106,18 +93,10 @@ export default function RegisterForm() {
             <div className="relative bg-muted rounded-md shadow-lg border border-solid w-[380px] max-w-full">
                 <div className="rounded-md p-8 flex flex-col bg-background border-b border-solid">
                     <Link href="/">
-                        <img
-                            className="h-8 mb-8"
-                            src="/logo.svg"
-                            alt="my logo"
-                        />
+                        <img className="h-8 mb-8" src="/logo.svg" alt="my logo" />
                     </Link>
-                    <h1 className="font-semibold mb-2">
-                        Register for Superstack
-                    </h1>
-                    <p className="text-muted-foreground text-sm mb-8">
-                        Hello! Please register to continue
-                    </p>
+                    <h1 className="font-semibold mb-2">Register for Superstack</h1>
+                    <p className="text-muted-foreground text-sm mb-8">Hello! Please register to continue</p>
                     <div className="flex gap-2 w-full mb-4">
                         <Button variant="outline" className="w-full gap-4">
                             <FaGithub className="h-5 w-5" />
@@ -128,15 +107,10 @@ export default function RegisterForm() {
                     </div>
                     <div className="mb-4 w-full flex items-center">
                         <Separator className="flex-1" />
-                        <span className="text-muted-foreground text-xs px-2">
-                            OR
-                        </span>
+                        <span className="text-muted-foreground text-xs px-2">OR</span>
                         <Separator className="flex-1" />
                     </div>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="w-full"
-                    >
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                         <FormField
                             control={form.control}
                             name="email"
@@ -176,24 +150,14 @@ export default function RegisterForm() {
                                 </FormItem>
                             )}
                         />
-                        <Button
-                            type="submit"
-                            className="w-full gap-2"
-                            disabled={loading}
-                        >
+                        <Button type="submit" className="w-full gap-2" disabled={loading}>
                             <span>Continue</span>
-                            {loading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <RiArrowRightLine />
-                            )}
+                            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RiArrowRightLine />}
                         </Button>
                     </form>
                 </div>
                 <div className="px-8 py-4 text-sm">
-                    <span className="text-muted-foreground/80">
-                        Have an account?{" "}
-                    </span>
+                    <span className="text-muted-foreground/80">Have an account? </span>
                     <Link href="/login">Login</Link>
                 </div>
             </div>

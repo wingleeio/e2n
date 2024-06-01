@@ -1,14 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/lib/api";
@@ -79,32 +72,20 @@ export const VerifyEmailForm = () => {
             <div className="relative bg-muted rounded-md shadow-lg border border-solid w-[380px] max-w-full">
                 <div className="rounded-md p-8 flex flex-col bg-background border-b border-solid">
                     <Link href="/">
-                        <img
-                            className="h-8 mb-8"
-                            src="/logo.svg"
-                            alt="my logo"
-                        />
+                        <img className="h-8 mb-8" src="/logo.svg" alt="my logo" />
                     </Link>
                     <h1 className="font-semibold mb-2">Check your email</h1>
                     <p className="text-muted-foreground text-sm mb-8">
-                        We've sent a code to{" "}
-                        <span className="font-semibold">
-                            {session.user.email}
-                        </span>
-                        ! Enter your verification code to continue.
+                        We've sent a code to <span className="font-semibold">{session.user.email}</span>! Enter your
+                        verification code to continue.
                     </p>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="w-full"
-                    >
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                         <FormField
                             control={form.control}
                             name="code"
                             render={({ field }) => (
                                 <FormItem className="w-full mb-4 text-muted-foreground">
-                                    <FormLabel className="whitespace-nowrap">
-                                        Verification Code
-                                    </FormLabel>
+                                    <FormLabel className="whitespace-nowrap">Verification Code</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
@@ -112,17 +93,9 @@ export const VerifyEmailForm = () => {
                                 </FormItem>
                             )}
                         />
-                        <Button
-                            type="submit"
-                            className="w-full gap-2"
-                            disabled={loading}
-                        >
+                        <Button type="submit" className="w-full gap-2" disabled={loading}>
                             <span>Continue</span>
-                            {loading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <RiArrowRightLine />
-                            )}
+                            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RiArrowRightLine />}
                         </Button>
                     </form>
                 </div>
@@ -133,33 +106,25 @@ export const VerifyEmailForm = () => {
                     <Link
                         href="#"
                         onClick={async () => {
-                            const loadingId = toast.loading(
-                                "Resending email verification...",
-                                {
-                                    description:
-                                        "Our professional office raccoons are working hard to send you a new code. Please wait a moment.",
-                                }
-                            );
+                            const loadingId = toast.loading("Resending email verification...", {
+                                description:
+                                    "Our professional office raccoons are working hard to send you a new code. Please wait a moment.",
+                            });
                             const { error } = await api.auth.resend.post();
 
                             if (!error) {
                                 toast.success("Email sent!", {
-                                    description:
-                                        "Check your email for the verification code at " +
-                                        session.user.email,
+                                    description: "Check your email for the verification code at " + session.user.email,
                                 });
                             }
 
                             if (error) {
                                 switch (error.status) {
                                     default:
-                                        toast.error(
-                                            "An error occurred. Please try again later.",
-                                            {
-                                                description:
-                                                    "The error has been logged and we will investigate it shortly.",
-                                            }
-                                        );
+                                        toast.error("An error occurred. Please try again later.", {
+                                            description:
+                                                "The error has been logged and we will investigate it shortly.",
+                                        });
                                         break;
                                 }
                             }

@@ -1,16 +1,39 @@
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "@/lib/constants";
-import { GitHub, OAuth2Provider } from "arctic";
+import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "@/lib/constants";
+import { Discord, GitHub } from "arctic";
 
 type OAuth = {
-    client: OAuth2Provider;
+    client: Discord | GitHub;
+    scopes: string[];
     getAttributes: (accessToken: string) => Promise<{ email: string | undefined; id: string | number | undefined }>;
 };
 
-export type OAuthProvider = "github";
+export type OAuthProvider = "github" | "discord";
 
 export const oauth: { [k in OAuthProvider]: OAuth } = {
+    discord: {
+        client: new Discord(DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, "http://localhost:3000/oauth/callback"),
+        scopes: ["identify", "email"],
+        getAttributes: async (accessToken: string) => {
+            const headers = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            };
+            const response = await fetch("https://discord.com/api/users/@me", headers);
+            const user: {
+                email: string;
+                id: string;
+            } = await response.json();
+
+            return {
+                email: user.email,
+                id: user.id,
+            };
+        },
+    },
     github: {
         client: new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET),
+        scopes: ["user:email"],
         getAttributes: async (accessToken: string) => {
             const headers = {
                 headers: {
