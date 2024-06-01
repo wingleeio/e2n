@@ -100,9 +100,7 @@ import { ClientSignedOut } from "@/components/client-signed-out";
 const SomeComponent = () => {
     return (
         <div>
-            <ClientSignedIn>
-                {(user) => <>Hello, your email is {user.email}</>}
-            </ClientSignedIn>
+            <ClientSignedIn>{(user) => <>Hello, your email is {user.email}</>}</ClientSignedIn>
             <ClientSignedOut>Hello, I'm not signed in!</ClientSignedOut>
         </div>
     );
@@ -116,3 +114,8 @@ Protected or public routes can be defined in `middleware.ts`. Update the arrays 
 const isProtectedRoute = createRouteMatcher(["/verify"]);
 const isPublicRoute = createRouteMatcher(["/join", "/login"]);
 ```
+
+## TODO
+
+-   [ ] Update OAuth2 error handling (User with email already exists, etc)
+-   [ ] Stripe integration
