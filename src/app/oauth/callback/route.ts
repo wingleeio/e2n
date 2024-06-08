@@ -14,7 +14,10 @@ export async function GET(req: Request) {
 
     if (!code || !state || !storedProvider || !storedState || state !== storedState) {
         return new Response(null, {
-            status: 400,
+            status: 302,
+            headers: {
+                Location: "/login?error=oauth_error",
+            },
         });
     }
 
